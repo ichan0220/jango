@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1.5, maximum-scale=1.5, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/user.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.3.1.css" />
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+        <!--<script type="text/javascript" src="cordova-2.6.0.js"></script>-->
+        <script type="text/javascript" src="cordova.js"></script>
+        <title>My Checklist</title>
+    </head>
+    <body>
+        <div data-role="header" style="overflow:hidden;" data-id="foo1" data-position="fixed">
+            <!-- <h1>My CheckList</h1> -->
+            <img src="logo.png" alt="JaNgo">
+            <a href="" onclick="exitFromApp()" data-icon="gear" class="ui-btn-right" data-shadow="false" data-iconshadow="false" style="zoom: 1.5">Keluar</a>
+            <div data-role="navbar">
+                <ul>
+                    <li><a data-theme="e" href="add-checklist.html" data-icon="edit" data-transition="flip">Tambah Checklist</a></li>
+                    <li><a data-theme="e" href="#">...</a></li>
+                    <li><a data-theme="e" href="#">...</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /header -->
+
+        <div data-role="content" >
+            <ul id="wish-content" data-theme="a" data-filter="true" data-filter-placeholder="Cari Checklist..." data-inset="true">
+                <!--content here-->
+            </ul>
+        </div>
+
+        <script type="text/javascript" charset="utf-8">
+
+        // Wait for Cordova to load
+        //
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function exitFromApp()
+         {
+            navigator.app.exitApp();
+         }
+
+
+        $(document).ready(function() {
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(populateDB, errorCB, successCB);
+        });
+
+        // Populate the database
+        //
+        function populateDB(tx) {
+            // tx.executeSql('DROP TABLE IF EXISTS checklist');
+            // tx.executeSql('DROP TABLE IF EXISTS checklist_item');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS checklist (id INTEGER PRIMARY KEY AUTOINCREMENT, name, description)');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS checklist_item (id INTEGER PRIMARY KEY AUTOINCREMENT, checklist_id INTEGER, name, description)');
+            // tx.executeSql('INSERT INTO checklist (id, name, description) VALUES (1, "Sample Checklist", "cuma contoh ajah")');
+        }
+
+        // Query the database
+        //
+        function queryDB(tx) {
+            tx.executeSql('SELECT * FROM checklist', [], querySuccess, errorCB);
+        }
+
+        // Query the success callback
+        //
+        function querySuccess(tx, results) {
+            var len = results.rows.length;
+            console.log("checklist table: " + len + " rows found.");
+            if(len != 0){
+                for (var i=0; i<len; i++){
+                    // console.log("Row = " + i + " ID = " + results.rows.item(i).id + " name =  " + results.rows.item(i).name + " description =  " + results.rows.item(i).description);
+                    $("#wish-content").append('<li><a rel="external" href="checklist-item.html?id='+results.rows.item(i).id+'"><h3 class="ui-li-heading">'+results.rows.item(i).name+'</h3><p class="ui-li-desc">" '+results.rows.item(i).description+' "</p></a><a href="add-checklist-item.html?id='+results.rows.item(i).id+'" data-theme="e" data-icon="plus" data-position-to="window" data-transition="pop">Tambah Daftar Item </a></li>');
+                }
+                $('#wish-content').listview();
+            } else {
+                $("#wish-content").append('<h3 id="empty" class="ui-li-heading">Anda tidak memiliki checklist...</h3>');
+            }
+        }
+
+        // Transaction error callback
+        //
+        function errorCB(err) {
+            console.log("Error processing SQL: "+err.code);
+        }
+
+        // Transaction success callback
+        //
+        function successCB() {
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(queryDB, errorCB);
+        }
+
+        // Cordova is ready
+        //
+        function onDeviceReady() {
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(populateDB, errorCB, successCB);
+        }
+
+
+	    </script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+
+    </body>
+</html>

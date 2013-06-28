@@ -1,0 +1,8 @@
+/*Global*/
+h1, h2, h3 {margin: 10px 0!important; font-weight: bolder;}
+.ui-page {background: #333!important }
+.ui-li-heading {margin: 0 0 10px!important}
+.time {font-size: 10px; float: right;}
+#textarea {height: 100px}
+p#img{text-align: center; height: 250px; position: relative; top: 70%}
+h1#notification, #empty {color: #fff; text-align: center; font-weight: normal;}

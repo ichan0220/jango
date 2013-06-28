@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/user.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.3.1.css" />
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+        <title>My Checklist</title>
+
+    </head>
+    <body>
+        <div>
+
+            <div data-role="header" data-theme="e">
+                <h1>Delete Checklist</h1>
+                <a href="checklist.html" data-icon="arrow-l" data-theme="e" data-iconpos="notext" data-shadow="false" data-iconshadow="false" data-transition="flip" data-role="button" rel="external">back</a>
+            </div>
+
+            <div data-role="content">
+                <h1 id="notification"></h1>
+                <form id="ChecklistForm" method="POST" action="#">
+                    <input type="hidden" value="" name="id" id="id"/>
+                    <input type="hidden" value="" name="checklist_id" id="checklist_id"/>
+                    <input id="submit" type="submit" value="Delete ?" data-mini="false" data-theme="e">
+                    <a href="checklist.html" data-theme="b" data-shadow="false" data-iconshadow="false" data-transition="flip" data-role="button" rel="external">Cancel</a>
+                </form>
+            </div>
+        </div>
+
+        <script>
+        //Wait for Cordova to load
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+
+        $(document).ready(function() {
+
+            var Url = window.location;
+            var checklist_id = getParameterByName("id",Url);
+            $("#checklist_id").val(checklist_id);
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(queryData, errorCB);
+
+            $("#ChecklistForm").on("submit", function(evt){
+                evt.preventDefault();
+                db.transaction(populateDB, errorCB, successCB);
+            });
+
+        });
+
+        function getParameterByName( name,href )
+        {
+          name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+          var regexS = "[\\?&]"+name+"=([^&#]*)";
+          var regex = new RegExp( regexS );
+          var results = regex.exec( href );
+          if( results == null )
+            return "";
+          else
+            return decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        // Populate the database
+        function populateDB(tx) {
+            // tx.executeSql('DROP TABLE IF EXISTS checklist');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS checklist_item (id INTEGER PRIMARY KEY AUTOINCREMENT, checklist_id INTEGER, name, description)');
+            // tx.executeSql('INSERT INTO checklist (id, name, description) VALUES (1, "Sample Checklist", "cuma contoh ajah")');
+        }
+
+        // Query the database get checklist name
+        function queryData(tx) {
+            var cklst_id = getParameterByName("id",window.location);
+            tx.executeSql('SELECT * FROM checklist_item WHERE id = ?', [cklst_id], queryChecklistSuccess, errorCB);
+        }
+
+        // Query the get checklist success callback
+        function queryChecklistSuccess(tx, results) {
+            // alert('sukses beroh ambil datanya');
+            console.log(results);
+            var len = results.rows.length;
+                $("#notification").append('Are you sure want delete all Checklist of : '+results.rows.item(0).name+' ?');
+        }
+
+        // Query the database
+        function queryDB(tx) {
+
+            var checklist_id = $("#checklist_id").val();
+            var name = $("#name").val();
+            var description = $("#description").val();
+            tx.executeSql('DELETE FROM checklist_item WHERE id= ?', [checklist_id], querySuccess, errorCB);
+        }
+
+        // Query the success callback
+        function querySuccess(tx, results) {
+            alert('sukses delete beroh');
+            window.location.href = 'checklist.html';
+        }
+
+        // Transaction error callback
+        function errorCB(err) {
+            console.log("Error processing SQL: "+err.code);
+        }
+
+        // Transaction success callback
+        function successCB() {
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(queryDB, errorCB);
+        }
+
+        // Cordova is ready
+        function onDeviceReady() {
+            var db = window.openDatabase("Mychecklist", "1.0", "Mychecklist", 200000);
+            db.transaction(populateDB, errorCB, successCB);
+        }
+
+    </script>
+
+
+
+        <script type="text/javascript" src="cordova-2.6.0.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html>
