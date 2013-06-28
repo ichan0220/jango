@@ -6,3 +6,5 @@ h1, h2, h3 {margin: 10px 0!important; font-weight: bolder;}
 #textarea {height: 100px}
 p#img{text-align: center; height: 250px; position: relative; top: 70%}
 h1#notification, #empty {color: #fff; text-align: center; font-weight: normal;}
+
+.ui-listview > .ui-li.ui-first-child {zoom: 1.5;}
