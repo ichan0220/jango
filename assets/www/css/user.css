@@ -1,4 +1,5 @@
 /*Global*/
+body {text-transform: none;}
 h1, h2, h3 {margin: 10px 0!important; font-weight: bolder;}
 .ui-page {background: #333!important }
 .ui-li-heading {margin: 0 0 10px!important}
@@ -7,4 +8,8 @@ h1, h2, h3 {margin: 10px 0!important; font-weight: bolder;}
 p#img{text-align: center; height: 250px; position: relative; top: 70%}
 h1#notification, #empty {color: #fff; text-align: center; font-weight: normal;}
 
-.ui-listview > .ui-li.ui-first-child {zoom: 1.5;}
+.ui-listview > .ui-li,
+input.ui-input-text {zoom: 1.5;}
+
+textarea.ui-input-text {height: 150px!important;}
+span.ui-btn-text {font-size: 20px!important}
